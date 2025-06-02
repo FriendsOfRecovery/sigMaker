@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.env
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+
+# VSCode/Cursor
+.vscode/
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.secret
+*.key
+*.pem
+*.env.*
+
+# Ignore output directory and all generated signature files
+/output/

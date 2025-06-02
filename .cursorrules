@@ -1,0 +1,32 @@
+# .cursorrules for sigMaker
+
+[General]
+project_type = "Signature Generator for Outlook (HTML)"
+language = "Python, PowerShell"
+api = "Microsoft Graph API"
+
+[Code Style]
+- Follow DRY (Don't Repeat Yourself) principle throughout all scripts and templates.
+- Use descriptive variable names for user attributes (e.g., display_name, email, phone, job_title, department, office_location, etc.).
+- All HTML templates must use Jinja2-style {{ variable }} placeholders for dynamic content.
+- Python code should follow PEP8 style guide.
+- PowerShell scripts should use PascalCase for functions and camelCase for variables.
+
+[File Structure]
+- /templates: Contains HTML signature templates with placeholders.
+- /scripts: Contains Python and PowerShell scripts for data fetching and signature generation.
+- /output: Generated signature files for each user.
+- /docs: Planning and documentation.
+
+[Collaboration]
+- All new features and changes must be documented in /docs/PLANNING.md before implementation.
+- Use comments to explain non-obvious logic, especially around data mapping and template rendering.
+- Scripts must be modular and reusable.
+
+[API Usage]
+- Use Microsoft Graph API to fetch user data, filtered to users with Business Premium licenses.
+- Do not hardcode sensitive information; use environment variables or secure vaults.
+
+[Output]
+- Output signatures as ready-to-copy HTML files, ensuring all links (email, phone, etc.) are fully functional and do not require user editing.
+- Validate HTML for compatibility with Outlook signature editor. 
