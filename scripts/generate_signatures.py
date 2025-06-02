@@ -19,7 +19,6 @@ DATA_PATH = os.path.join(APP_ROOT, 'output', 'users.json')
 TEMPLATE_PATH = os.path.join(APP_ROOT, 'templates')
 OUTPUT_DIR = os.path.join(APP_ROOT, 'output')
 TEMPLATE_FILE = 'signature_template.html'
-PREVIEW_TEMPLATE_FILE = 'preview_template.html'
 
 def load_users():
     if not os.path.isfile(DATA_PATH):
@@ -57,13 +56,10 @@ def render_signatures(users, selected_indices):
     try:
         env = Environment(loader=FileSystemLoader(TEMPLATE_PATH))
         template = env.get_template(TEMPLATE_FILE)
-        preview_template = env.get_template(PREVIEW_TEMPLATE_FILE)
     except TemplateNotFound as e:
         print(f"Error: Template file not found: {e}")
         sys.exit(1)
 
-    generated_signatures = []
-    
     for idx in selected_indices:
         user = users[idx - 1]
         context = {
@@ -80,39 +76,19 @@ def render_signatures(users, selected_indices):
             'website_url': user.get('WebsiteUrl', ''),
             'pronouns': user.get('Pronouns', ''),
             'photo_url': user.get('PhotoUrl', ''),
+            'street_address': user.get('StreetAddress', ''),
+            'city': user.get('City', ''),
+            'state': user.get('State', ''),
+            'postal_code': user.get('PostalCode', ''),
         }
-        
-        # Generate individual signature
         output_path = os.path.join(OUTPUT_DIR, f"{context['email']}.html")
         try:
             with open(output_path, 'w', encoding='utf-8') as out:
                 out.write(template.render(**context))
             print(f"Generated: {output_path}")
-            
-            # Add to list for preview page
-            generated_signatures.append({
-                'display_name': context['display_name'],
-                'job_title': context['job_title'],
-                'email': context['email'],
-                'filename': f"{context['email']}.html"
-            })
         except Exception as e:
             print(f"Error writing signature for {context['email']}: {e}")
             continue
-
-    # Generate preview page
-    if generated_signatures:
-        preview_context = {
-            'signatures': generated_signatures,
-            'generation_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        }
-        preview_path = os.path.join(OUTPUT_DIR, 'preview.html')
-        try:
-            with open(preview_path, 'w', encoding='utf-8') as out:
-                out.write(preview_template.render(**preview_context))
-            print(f"\nGenerated preview page: {preview_path}")
-        except Exception as e:
-            print(f"Error writing preview page: {e}")
 
 def main():
     users = load_users()

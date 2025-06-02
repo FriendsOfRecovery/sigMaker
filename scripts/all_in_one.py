@@ -5,6 +5,7 @@ import argparse
 
 FETCH_SCRIPT = os.path.join(os.path.dirname(__file__), 'fetch_m365_users.ps1')
 GENERATE_SCRIPT = os.path.join(os.path.dirname(__file__), 'generate_signatures.py')
+COPY_SCRIPT = os.path.join(os.path.dirname(__file__), 'copy_output_to_docs.py')
 
 def main():
     parser = argparse.ArgumentParser(description='Fetch users and generate signatures.')
@@ -45,7 +46,17 @@ def main():
         print(f'Error running signature generation script: {e}')
         sys.exit(1)
 
-    print('\nAll done! Check the output/ directory for generated signatures.')
+    # Step 3: Copy output to docs and generate index
+    print('\nCopying signature files and generating index...')
+    try:
+        result = subprocess.run([
+            sys.executable, COPY_SCRIPT
+        ], check=True)
+    except Exception as e:
+        print(f'Error running copy_output_to_docs.py: {e}')
+        sys.exit(1)
+
+    print('\nAll done! Check the docs/ directory for generated signatures and index.')
 
 if __name__ == '__main__':
     main() 
