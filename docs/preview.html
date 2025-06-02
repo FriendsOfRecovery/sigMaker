@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Preview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(90deg, #5F07B3, #008DBB);
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .signature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .signature-card {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .signature-card:hover {
+            transform: translateY(-2px);
+        }
+        .signature-preview {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow: hidden;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 4px;
+        }
+        .close-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .close-button:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Signature Preview</h1>
+            <p>Click on any signature to view it in full size</p>
+        </div>
+        <div class="signature-list" id="signatureList">
+            <!-- Signatures will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <div id="signatureModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Function to load signatures
+        async function loadSignatures() {
+            try {
+                const response = await fetch('/api/signatures');
+                const signatures = await response.json();
+                const signatureList = document.getElementById('signatureList');
+                
+                signatures.forEach(signature => {
+                    const card = document.createElement('div');
+                    card.className = 'signature-card';
+                    card.innerHTML = `
+                        <h3>${signature.display_name}</h3>
+                        <div class="signature-preview">
+                            ${signature.html_content}
+                        </div>
+                    `;
+                    card.onclick = () => showSignature(signature);
+                    signatureList.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading signatures:', error);
+            }
+        }
+
+        // Function to show signature in modal
+        function showSignature(signature) {
+            const modal = document.getElementById('signatureModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = signature.html_content;
+            modal.style.display = 'block';
+        }
+
+        // Function to close modal
+        function closeModal() {
+            const modal = document.getElementById('signatureModal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('signatureModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Load signatures when page loads
+        document.addEventListener('DOMContentLoaded', loadSignatures);
+    </script>
+</body>
+</html> 

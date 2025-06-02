@@ -78,4 +78,27 @@ To run tests:
    pytest
    ```
 
-Tests cover user data loading, template rendering, and error handling for missing files. 
+Tests cover user data loading, template rendering, and error handling for missing files.
+
+## Accessing Signatures via GitHub Pages
+
+Signatures are now available online via GitHub Pages. Employees can access their signature by visiting:
+
+    https://<your-username>.github.io/<repo-name>/
+
+and selecting their email HTML file (e.g., `jane.doe@company.com.html`).
+
+The `docs/` folder is automatically updated with the latest signatures.
+
+## How to Use
+
+1. **After generating new signatures**, run:
+   ```
+   python scripts/copy_output_to_docs.py
+   ```
+2. **Commit and push** the changes to GitHub.
+3. Employees can access their signature at:
+   ```
+   https://<your-username>.github.io/<repo-name>/
+   ```
+   and click their email. 

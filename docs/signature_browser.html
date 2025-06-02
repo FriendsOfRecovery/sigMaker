@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Browser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(90deg, #5F07B3, #008DBB);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .signature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .signature-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .signature-preview:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .signature-header {
+            background: #f8f8f8;
+            padding: 10px;
+            margin: -20px -20px 20px -20px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+            color: #5F07B3;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        button {
+            background: #5F07B3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #008DBB;
+        }
+        #fileInput {
+            display: none;
+        }
+        .file-input-label {
+            background: #008DBB;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .signature-content {
+            min-height: 200px;
+        }
+        .no-signatures {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Signature Browser</h1>
+            <div class="controls">
+                <label class="file-input-label">
+                    Select Signature Files
+                    <input type="file" id="fileInput" accept=".html" multiple>
+                </label>
+            </div>
+        </div>
+
+        <div id="signatureGrid" class="signature-grid">
+            <div class="no-signatures">
+                Select signature files to preview them here
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let signatures = [];
+
+        // Handle file selection
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            signatures = Array.from(e.target.files)
+                .filter(file => file.name.endsWith('.html'))
+                .sort((a, b) => a.name.localeCompare(b.name));
+            
+            renderSignatureGrid();
+        });
+
+        async function renderSignatureGrid() {
+            const grid = document.getElementById('signatureGrid');
+            grid.innerHTML = '';
+            
+            if (signatures.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-signatures">
+                        Select signature files to preview them here
+                    </div>
+                `;
+                return;
+            }
+
+            for (const file of signatures) {
+                const preview = document.createElement('div');
+                preview.className = 'signature-preview';
+                
+                const header = document.createElement('div');
+                header.className = 'signature-header';
+                header.textContent = file.name.replace('.html', '');
+                
+                const content = document.createElement('div');
+                content.className = 'signature-content';
+                
+                try {
+                    const fileContent = await file.text();
+                    content.innerHTML = fileContent;
+                } catch (error) {
+                    content.innerHTML = `<div style="color: red;">Error loading signature: ${error.message}</div>`;
+                }
+                
+                preview.appendChild(header);
+                preview.appendChild(content);
+                grid.appendChild(preview);
+            }
+        }
+    </script>
+</body>
+</html> 
