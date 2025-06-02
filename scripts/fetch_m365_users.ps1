@@ -22,17 +22,17 @@ function Get-FORAMailboxUsers {
     # Connect to Microsoft Graph interactively (uses default browser)
     Connect-MgGraph -Scopes "User.Read.All", "Directory.Read.All"
 
-    # Get all users with a user mailbox and UPN ending with @friendsofrecovery.com
-    $users = Get-MgUser -All | Where-Object {
-        $null -ne $_.Mail -and $_.UserPrincipalName.ToLower().EndsWith("@friendsofrecovery.com")
+    # DEBUG: Output all UPNs before filtering
+    $allUsers = Get-MgUser -All
+    $allUsers | ForEach-Object { Write-Host "UPN: $($_.UserPrincipalName)" }
+
+    # Get all users with a user mailbox and UPN ending with @friendsofrecovery.com, excluding shared mailboxes
+    $users = $allUsers | Where-Object {
+        $_.UserPrincipalName -imatch '^[a-z]\.[a-z]+@friendsofrecovery\.com$'
     }
 
     $userCount = $users.Count
-    Write-Host "Found $userCount users with a user mailbox at friendsofrecovery.com."
-    if ($userCount -eq 0) {
-        Write-Warning "No users found with a user mailbox at friendsofrecovery.com. No file will be written."
-        exit 1
-    }
+    Write-Host "Found $userCount users matching the regex pattern."
 
     $writeFile = $true
     if ($DebugOutput) {
