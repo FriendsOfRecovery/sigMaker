@@ -36,41 +36,83 @@ def main():
         real_users = [u for u in users if u.get('GivenName') and u.get('Surname')]
         # Sort by DisplayName or email
         real_users.sort(key=lambda u: (u.get('DisplayName') or u.get('UserPrincipalName', '')))
-        # Build file list
-        file_links = [f"<li><a href=\"{u['UserPrincipalName']}.html\">{u['UserPrincipalName']}.html</a></li>" for u in real_users]
+        # Build file list as card divs
+        file_cards = [f'<div class="card"><a href="{u["UserPrincipalName"]}.html">{u["UserPrincipalName"]}.html</a></div>' for u in real_users]
     else:
-        file_links = []
+        file_cards = []
 
-    # HTML template (matches current style)
+    # Modern card-style HTML template
     index_html_content = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Signature Index</title>
     <style>
-        body {{ font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 40px; }}
-        .container {{ max-width: 800px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 32px; }}
-        h1 {{ color: #5F07B3; }}
-        ul {{ list-style: none; padding: 0; }}
-        li {{ margin: 12px 0; }}
-        a {{ color: #008DBB; text-decoration: none; font-size: 1.1em; }}
-        a:hover {{ text-decoration: underline; }}
+        body {{ font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; margin: 0; padding: 40px; }}
+        .container {{ max-width: 900px; margin: auto; background: #fff; border-radius: 16px; box-shadow: 0 4px 24px #0002; padding: 40px 32px 32px 32px; }}
+        h1 {{ color: #5F07B3; margin-bottom: 32px; }}
+        .card-grid {{ display: flex; flex-wrap: wrap; gap: 24px; justify-content: flex-start; margin-bottom: 32px; }}
+        .card {{
+            background: #fafbfc;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 24px 20px;
+            min-width: 260px;
+            max-width: 320px;
+            flex: 1 1 260px;
+            display: flex;
+            align-items: center;
+            transition: box-shadow 0.2s;
+        }}
+        .card:hover {{
+            box-shadow: 0 6px 24px #5f07b320;
+        }}
+        .card a {{
+            color: #008DBB;
+            text-decoration: none;
+            font-size: 1.08em;
+            font-weight: 500;
+            word-break: break-all;
+        }}
+        .card a:hover {{
+            text-decoration: underline;
+        }}
+        hr {{ margin: 40px 0 32px 0; border: none; border-top: 2px solid #eee; }}
+        h2 {{ color: #333; margin-top: 0; }}
+        h3 {{ color: #5F07B3; margin-bottom: 8px; }}
+        .instructions {{ background: #f0f4fa; border-radius: 10px; padding: 24px 20px; margin-top: 0; box-shadow: 0 1px 4px #0001; }}
+        .instructions ul {{ margin: 0 0 12px 0; padding-left: 20px; }}
+        .instructions li {{ margin-bottom: 6px; }}
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Signature Files</h1>
-    <ul>
-        {''.join(file_links) if file_links else '<li>No user signatures found.</li>'}
-    </ul>
-    <p>Click your email to view or copy your Outlook signature.</p>
+    <div class="card-grid">
+        {''.join(file_cards) if file_cards else '<p>No user signatures found.</p>'}
+    </div>
+    <p style="margin-top: 24px;">Click your email to view or copy your Outlook signature.</p>
+    <hr>
+    <div class="instructions">
+        <h2>How to Add Your Signature in Outlook</h2>
+        <h3>New Outlook</h3>
+        <ul>
+            <li>See official guide: <a href="https://support.microsoft.com/en-us/office/add-a-signature-in-new-outlook-4c3f5fdb-5c1e-4d3e-9b3c-4a2c7a5b5c0a" target="_blank">Add a signature in New Outlook</a></li>
+            <li>Go to <b>Settings</b> &gt; <b>Mail</b> &gt; <b>Compose and reply</b> and paste your signature.</li>
+        </ul>
+        <h3>Classic Outlook</h3>
+        <ul>
+            <li>See official guide: <a href="https://support.microsoft.com/en-us/office/create-and-add-a-signature-to-messages-8ee5d4f4-68fd-464a-a1c1-0e1c80bb27f2" target="_blank">Create and add a signature to messages</a></li>
+            <li>Go to <b>File</b> &gt; <b>Options</b> &gt; <b>Mail</b> &gt; <b>Signatures</b> and paste your signature.</li>
+        </ul>
+    </div>
 </div>
 </body>
 </html>\n'''
 
     with open(index_html, 'w', encoding='utf-8') as f:
         f.write(index_html_content)
-        print(f'Generated {index_html} with {len(file_links)} user links.')
+        print(f'Generated {index_html} with {len(file_cards)} user links.')
 
 if __name__ == '__main__':
     main() 
